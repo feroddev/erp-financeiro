@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+  <div class="container mx-auto px-4 py-16">
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+        <div class="text-center mb-8">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+            {{ title }}
+          </h1>
+          <p class="text-lg text-gray-600">
+            Sistema de Gestão Financeira
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mt-12">
+          <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-semibold">Frontend</h3>
+              <span class="bg-white/20 px-3 py-1 rounded-full text-sm">Angular 18</span>
+            </div>
+            <p class="text-blue-100">
+              Interface moderna com Tailwind CSS
+            </p>
+          </div>
+
+          <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-semibold">Backend</h3>
+              <span class="bg-white/20 px-3 py-1 rounded-full text-sm">NestJS</span>
+            </div>
+            <p class="text-purple-100">
+              API REST com TypeORM e PostgreSQL
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-8 p-6 bg-gray-50 rounded-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-semibold text-gray-800 mb-1">Status do Backend</h4>
+              <p class="text-sm text-gray-600">{{ backendMessage }}</p>
+            </div>
+            <div class="text-right">
+              <span class="inline-block px-4 py-2 rounded-lg font-medium"
+                    [ngClass]="backendStatus.includes('✓') ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'">
+                {{ backendStatus }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 text-center">
+          <button (click)="checkBackend()" 
+                  class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200">
+            Verificar Conexão
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center text-gray-600">
+        <p class="text-sm">
+          Projeto containerizado com Docker 🐳
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
