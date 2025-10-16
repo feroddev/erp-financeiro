@@ -1,0 +1,762 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Mini ERP Financeiro API",
+    "description": "API para gerenciamento financeiro com controle de clientes, contas a pagar e receber",
+    "version": "1.0",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor Local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Autenticação e autorização"
+    },
+    {
+      "name": "clients",
+      "description": "Gerenciamento de clientes"
+    },
+    {
+      "name": "transactions",
+      "description": "Gerenciamento de transações financeiras"
+    },
+    {
+      "name": "reports",
+      "description": "Relatórios financeiros"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Registrar novo usuário",
+        "operationId": "register",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "username", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "johndoe",
+                    "minLength": 3
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123",
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Fazer login",
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["emailOrUsername", "password"],
+                "properties": {
+                  "emailOrUsername": {
+                    "type": "string",
+                    "example": "admin@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "admin123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Obter perfil do usuário",
+        "operationId": "getProfile",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil retornado com sucesso"
+          },
+          "401": {
+            "description": "Não autorizado"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Obter dados do usuário atual",
+        "operationId": "getCurrentUser",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados retornados com sucesso"
+          },
+          "401": {
+            "description": "Não autorizado"
+          }
+        }
+      }
+    },
+    "/clients": {
+      "post": {
+        "tags": ["clients"],
+        "summary": "Criar novo cliente",
+        "operationId": "createClient",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "João Silva"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "joao@example.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "(11) 98765-4321"
+                  },
+                  "document": {
+                    "type": "string",
+                    "example": "123.456.789-00"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "Rua das Flores, 123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente criado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "409": {
+            "description": "Email já existe"
+          }
+        }
+      },
+      "get": {
+        "tags": ["clients"],
+        "summary": "Listar clientes",
+        "operationId": "listClients",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Buscar por nome"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Número da página"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Itens por página"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de clientes retornada com sucesso"
+          }
+        }
+      }
+    },
+    "/clients/{id}": {
+      "get": {
+        "tags": ["clients"],
+        "summary": "Buscar cliente por ID",
+        "operationId": "getClient",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado"
+          },
+          "404": {
+            "description": "Cliente não encontrado"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["clients"],
+        "summary": "Atualizar cliente",
+        "operationId": "updateClient",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "document": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente atualizado com sucesso"
+          },
+          "404": {
+            "description": "Cliente não encontrado"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["clients"],
+        "summary": "Remover cliente",
+        "operationId": "deleteClient",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cliente removido com sucesso"
+          },
+          "404": {
+            "description": "Cliente não encontrado"
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "post": {
+        "tags": ["transactions"],
+        "summary": "Criar nova transação",
+        "operationId": "createTransaction",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["kind", "description", "amount", "dueDate"],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["PAYABLE", "RECEIVABLE"],
+                    "example": "RECEIVABLE"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["PENDING", "PAID", "OVERDUE", "CANCELLED"],
+                    "example": "PENDING"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Pagamento de serviços"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 1500.00
+                  },
+                  "dueDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-01-15"
+                  },
+                  "paymentDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-01-15"
+                  },
+                  "clientId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "example": "Observações sobre a transação"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transação criada com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          }
+        }
+      },
+      "get": {
+        "tags": ["transactions"],
+        "summary": "Listar transações",
+        "operationId": "listTransactions",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["PAYABLE", "RECEIVABLE"]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "PAID", "OVERDUE", "CANCELLED"]
+            }
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data inicial (YYYY-MM-DD)"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data final (YYYY-MM-DD)"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de transações retornada com sucesso"
+          }
+        }
+      }
+    },
+    "/transactions/{id}": {
+      "get": {
+        "tags": ["transactions"],
+        "summary": "Buscar transação por ID",
+        "operationId": "getTransaction",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transação encontrada"
+          },
+          "404": {
+            "description": "Transação não encontrada"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["transactions"],
+        "summary": "Atualizar transação",
+        "operationId": "updateTransaction",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["PAYABLE", "RECEIVABLE"]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["PENDING", "PAID", "OVERDUE", "CANCELLED"]
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "dueDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "paymentDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "clientId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transação atualizada com sucesso"
+          },
+          "404": {
+            "description": "Transação não encontrada"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["transactions"],
+        "summary": "Remover transação",
+        "operationId": "deleteTransaction",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Transação removida com sucesso"
+          },
+          "404": {
+            "description": "Transação não encontrada"
+          }
+        }
+      }
+    },
+    "/transactions/{id}/pay": {
+      "post": {
+        "tags": ["transactions"],
+        "summary": "Marcar transação como paga",
+        "operationId": "payTransaction",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-01-15"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transação marcada como paga"
+          },
+          "404": {
+            "description": "Transação não encontrada"
+          }
+        }
+      }
+    },
+    "/reports/cashflow": {
+      "get": {
+        "tags": ["reports"],
+        "summary": "Relatório de fluxo de caixa",
+        "operationId": "getCashflow",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data inicial (YYYY-MM-DD)",
+            "example": "2025-01-01"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Data final (YYYY-MM-DD)",
+            "example": "2025-01-31"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Relatório gerado com sucesso"
+          },
+          "400": {
+            "description": "Parâmetros inválidos"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtido no endpoint /auth/login"
+      }
+    }
+  }
+}
