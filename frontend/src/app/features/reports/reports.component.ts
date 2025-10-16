@@ -88,7 +88,7 @@ export class ReportsComponent implements OnInit {
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: (context: any) => {
             const label = context.dataset.label || '';
             const value = context.parsed.y || 0;
             return `${label}: ${this.formatCurrency(value)}`;
@@ -100,7 +100,7 @@ export class ReportsComponent implements OnInit {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => {
+          callback: (value: any) => {
             return 'R$ ' + Number(value).toLocaleString('pt-BR');
           }
         }
@@ -127,7 +127,7 @@ export class ReportsComponent implements OnInit {
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: (context: any) => {
             const label = context.label || '';
             const value = context.parsed || 0;
             return `${label}: ${this.formatCurrency(value)}`;
