@@ -53,7 +53,7 @@ async function seed() {
       console.log('✓ Dados limpos');
     }
 
-    const hashedPassword = await bcrypt.hash('Admin@123', 10);
+    const hashedPassword = await bcrypt.hash('admin123', 10);
     const user = userRepository.create({
       username: 'admin',
       email: 'admin@example.com',
