@@ -34,7 +34,11 @@ export class ReportsService {
 
     transactions.forEach((transaction) => {
       const amount = Number(transaction.amount);
-      const dateKey = transaction.paymentDate.toISOString().split('T')[0];
+      const paymentDate =
+        transaction.paymentDate instanceof Date
+          ? transaction.paymentDate
+          : new Date(transaction.paymentDate);
+      const dateKey = paymentDate.toISOString().split('T')[0];
 
       if (!timelineMap.has(dateKey)) {
         timelineMap.set(dateKey, { in: 0, out: 0 });
