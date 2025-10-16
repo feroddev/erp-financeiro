@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../users/entities/user.entity';
+import { UserWithoutPassword, LoginResponse } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(emailOrUsername: string, password: string): Promise<any> {
+  async validateUser(
+    emailOrUsername: string,
+    password: string,
+  ): Promise<UserWithoutPassword | null> {
     let user = await this.usersService.findByEmail(emailOrUsername);
 
     if (!user) {
@@ -37,7 +41,7 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
+  async login(user: UserWithoutPassword): Promise<LoginResponse> {
     const payload = {
       email: user.email,
       sub: user.id,

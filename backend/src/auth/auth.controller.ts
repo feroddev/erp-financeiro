@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { JwtUser, RequestWithUser } from './interfaces/jwt-payload.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -32,19 +33,19 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto, @Request() req) {
+  async login(@Body() loginDto: LoginDto, @Request() req: RequestWithUser) {
     return this.authService.login(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@CurrentUser() user: any) {
+  async getProfile(@CurrentUser() user: JwtUser) {
     return this.authService.getProfile(user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async getCurrentUser(@CurrentUser() user: any) {
+  async getCurrentUser(@CurrentUser() user: JwtUser) {
     return user;
   }
 }
