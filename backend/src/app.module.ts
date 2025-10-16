@@ -26,7 +26,6 @@ import { ReportsModule } from './reports/reports.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
         synchronize: false,
-        migrationsRun: true,
       }),
       inject: [ConfigService],
     }),

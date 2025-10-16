@@ -2,6 +2,14 @@ node_modules
 dist
 npm-debug.log
 .env
+.env.local
 .git
 .gitignore
 README.md
+MIGRATIONS_SEEDS.md
+*.md
+.vscode
+.idea
+coverage
+.nyc_output
+*.log
