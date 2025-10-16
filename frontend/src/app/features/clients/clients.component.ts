@@ -8,12 +8,13 @@ import {
   CreateClientDto,
   UpdateClientDto,
 } from "../../core/services/clients.service";
-import { ModalComponent } from "../../shared/components/modal/modal.component";
-import { TableComponent, TableColumn } from "../../shared/components/table/table.component";
-import { ButtonComponent } from "../../shared/components/button/button.component";
-import { SearchInputComponent } from "../../shared/components/search-input/search-input.component";
-import { CardComponent } from "../../shared/components/card/card.component";
-import { AlertComponent } from "../../shared/components/alert/alert.component";
+import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { TableComponent, TableColumn } from '../../shared/components/table/table.component';
+import { ButtonComponent } from '../../shared/components/button/button.component';
+import { SearchInputComponent } from '../../shared/components/search-input/search-input.component';
+import { CardComponent } from '../../shared/components/card/card.component';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: "app-clients",
@@ -27,6 +28,7 @@ import { AlertComponent } from "../../shared/components/alert/alert.component";
     SearchInputComponent,
     CardComponent,
     AlertComponent,
+    HeaderComponent,
   ],
   templateUrl: "./clients.component.html",
   styleUrl: "./clients.component.css",
@@ -39,6 +41,7 @@ export class ClientsComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   total = 0;
+  limit = 10;
 
   showModal = false;
   modalMode: "create" | "edit" = "create";
@@ -83,7 +86,7 @@ export class ClientsComponent implements OnInit {
     this.error = "";
 
     this.clientsService
-      .getClients(this.searchTerm, this.currentPage, 10)
+      .getClients(this.searchTerm, this.currentPage, this.limit)
       .subscribe({
         next: (response) => {
           this.clients = response.data;
@@ -116,6 +119,19 @@ export class ClientsComponent implements OnInit {
       this.currentPage--;
       this.loadClients();
     }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.loadClients();
+    }
+  }
+
+  changeLimit(newLimit: number): void {
+    this.limit = newLimit;
+    this.currentPage = 1;
+    this.loadClients();
   }
 
   openCreateModal(): void {

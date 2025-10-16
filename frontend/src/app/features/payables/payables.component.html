@@ -1,33 +1,5 @@
 <div class="min-h-screen bg-gray-50">
-  <nav class="bg-white shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center">
-          <button
-            (click)="goBack()"
-            class="mr-2 sm:mr-4 text-gray-600 hover:text-gray-900 transition-colors p-2"
-          >
-            <svg
-              class="w-5 h-5 sm:w-6 sm:h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-          </button>
-          <h1 class="text-lg sm:text-xl font-bold text-gray-800">
-            Contas a Pagar
-          </h1>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <app-header></app-header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
     <app-alert
@@ -94,9 +66,12 @@
         [currentPage]="currentPage"
         [totalPages]="totalPages"
         [total]="total"
+        [limit]="limit"
         itemName="contas a pagar"
         (previousPage)="previousPage()"
         (nextPage)="nextPage()"
+        (pageChange)="goToPage($event)"
+        (limitChange)="changeLimit($event)"
       >
         <tr
           *ngFor="let transaction of transactions"

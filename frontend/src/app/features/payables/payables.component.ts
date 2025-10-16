@@ -17,6 +17,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { SearchInputComponent } from '../../shared/components/search-input/search-input.component';
 import { CardComponent } from '../../shared/components/card/card.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-payables',
@@ -29,7 +30,8 @@ import { AlertComponent } from '../../shared/components/alert/alert.component';
     ButtonComponent,
     SearchInputComponent,
     CardComponent,
-    AlertComponent
+    AlertComponent,
+    HeaderComponent
   ],
   templateUrl: './payables.component.html',
   styleUrl: './payables.component.css'
@@ -42,6 +44,7 @@ export class PayablesComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   total = 0;
+  limit = 10;
 
   showModal = false;
   modalMode: 'create' | 'edit' = 'create';
@@ -87,7 +90,7 @@ export class PayablesComponent implements OnInit {
     this.error = '';
 
     this.transactionsService
-      .getTransactions(TransactionKind.PAYABLE, undefined, this.currentPage, 10)
+      .getTransactions(TransactionKind.PAYABLE, undefined, this.currentPage, this.limit)
       .subscribe({
         next: (response) => {
           this.transactions = response.data;
@@ -126,6 +129,19 @@ export class PayablesComponent implements OnInit {
       this.currentPage--;
       this.loadTransactions();
     }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.loadTransactions();
+    }
+  }
+
+  changeLimit(newLimit: number): void {
+    this.limit = newLimit;
+    this.currentPage = 1;
+    this.loadTransactions();
   }
 
   openCreateModal(): void {

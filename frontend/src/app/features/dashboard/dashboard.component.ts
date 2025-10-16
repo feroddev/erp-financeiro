@@ -4,11 +4,12 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ReportsService, FinancialSummary } from '../../core/services/reports.service';
 import { User } from '../../core/models/user.model';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HeaderComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -17,7 +18,6 @@ export class DashboardComponent implements OnInit {
   financialSummary: FinancialSummary | null = null;
   loading = true;
   error = '';
-  mobileMenuOpen = false;
 
   constructor(
     private authService: AuthService,
@@ -60,13 +60,5 @@ export class DashboardComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  toggleMobileMenu(): void {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
-  }
-
-  closeMobileMenu(): void {
-    this.mobileMenuOpen = false;
   }
 }
