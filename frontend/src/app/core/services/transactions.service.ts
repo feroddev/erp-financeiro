@@ -74,7 +74,10 @@ export class TransactionsService {
     kind?: TransactionKind,
     status?: TransactionStatus,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
+    clientId?: string,
+    from?: string,
+    to?: string
   ): Observable<PaginatedResponse<Transaction>> {
     let params = new HttpParams()
       .set('page', page.toString())
@@ -86,6 +89,18 @@ export class TransactionsService {
 
     if (status) {
       params = params.set('status', status);
+    }
+
+    if (clientId) {
+      params = params.set('clientId', clientId);
+    }
+
+    if (from) {
+      params = params.set('from', from);
+    }
+
+    if (to) {
+      params = params.set('to', to);
     }
 
     return this.http.get<PaginatedResponse<Transaction>>(this.apiUrl, { params });

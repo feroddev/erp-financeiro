@@ -46,6 +46,15 @@ export class ReceivablesComponent implements OnInit {
   total = 0;
   limit = 10;
 
+  filters = {
+    status: '',
+    clientId: '',
+    from: '',
+    to: ''
+  };
+
+  showFilters = false;
+
   showModal = false;
   modalMode: 'create' | 'edit' = 'create';
   selectedTransaction: Transaction | null = null;
@@ -89,8 +98,18 @@ export class ReceivablesComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
+    const status = this.filters.status ? (this.filters.status as TransactionStatus) : undefined;
+
     this.transactionsService
-      .getTransactions(TransactionKind.RECEIVABLE, undefined, this.currentPage, this.limit)
+      .getTransactions(
+        TransactionKind.RECEIVABLE,
+        status,
+        this.currentPage,
+        this.limit,
+        this.filters.clientId || undefined,
+        this.filters.from || undefined,
+        this.filters.to || undefined
+      )
       .subscribe({
         next: (response) => {
           this.transactions = response.data;
@@ -142,6 +161,26 @@ export class ReceivablesComponent implements OnInit {
     this.limit = newLimit;
     this.currentPage = 1;
     this.loadTransactions();
+  }
+
+  applyFilters(): void {
+    this.currentPage = 1;
+    this.loadTransactions();
+  }
+
+  clearFilters(): void {
+    this.filters = {
+      status: '',
+      clientId: '',
+      from: '',
+      to: ''
+    };
+    this.currentPage = 1;
+    this.loadTransactions();
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
   }
 
   openCreateModal(): void {
