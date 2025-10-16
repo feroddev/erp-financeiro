@@ -7,16 +7,22 @@ import { CommonModule } from "@angular/common";
   imports: [CommonModule],
   template: `
     <div
-      class="bg-white rounded-xl shadow-lg overflow-hidden"
-      [ngClass]="{ 'hover:shadow-xl transition-shadow': hoverable, 'p-4 sm:p-6': padding }"
+      class="bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col"
+      [ngClass]="{
+        'hover:shadow-xl transition-shadow': hoverable,
+        'p-4 sm:p-6': padding
+      }"
     >
       <div *ngIf="title" class="mb-4 sm:mb-6">
         <h3 class="text-lg sm:text-xl font-bold text-gray-900">{{ title }}</h3>
-        <p *ngIf="subtitle" class="text-sm text-gray-600 mt-1">{{ subtitle }}</p>
+        <p *ngIf="subtitle" class="text-sm text-gray-600 mt-1">
+          {{ subtitle }}
+        </p>
       </div>
       <ng-content></ng-content>
     </div>
   `,
+  host: { class: "block h-full" }, // 🔥 importante
 })
 export class CardComponent {
   @Input() title?: string;
