@@ -1,35 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [RouterOutlet],
+  template: "<router-outlet></router-outlet>",
+  styleUrl: "./app.component.css",
 })
-export class AppComponent implements OnInit {
-  title = 'Mini ERP Financeiro';
-  backendStatus = 'Verificando...';
-  backendMessage = '';
-
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.checkBackend();
-  }
-
-  checkBackend() {
-    this.http.get<any>('http://localhost:3000/health').subscribe({
-      next: (response) => {
-        this.backendStatus = 'Conectado ✓';
-        this.backendMessage = `Status: ${response.status}`;
-      },
-      error: () => {
-        this.backendStatus = 'Desconectado ✗';
-        this.backendMessage = 'Não foi possível conectar ao backend';
-      }
-    });
-  }
-}
+export class AppComponent {}

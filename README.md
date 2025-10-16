@@ -9,12 +9,16 @@ Sistema de gestão financeira fullstack containerizado com Docker.
 - **Tailwind CSS** - Framework CSS utility-first
 - **TypeScript** - Linguagem tipada
 - **Nginx** - Servidor web para produção
+- **JWT** - Autenticação com JSON Web Tokens
+- **Route Guards** - Proteção de rotas
 
 ### Backend
 - **NestJS** - Framework Node.js progressivo
 - **TypeORM** - ORM para TypeScript/JavaScript
 - **PostgreSQL** - Banco de dados relacional
 - **TypeScript** - Linguagem tipada
+- **Passport JWT** - Estratégia de autenticação
+- **bcrypt** - Hash de senhas
 
 ### Infraestrutura
 - **Docker** - Containerização
@@ -52,6 +56,14 @@ Este comando irá:
 - **Frontend**: http://localhost:4200
 - **Backend API**: http://localhost:3000
 - **PostgreSQL**: localhost:5432
+
+### 4. Primeiro acesso
+
+1. Acesse http://localhost:4200
+2. Clique em "Cadastre-se"
+3. Crie sua conta com email, usuário e senha
+4. Faça login com suas credenciais
+5. Você será redirecionado para o dashboard protegido
 
 ## 🏗️ Estrutura do Projeto
 

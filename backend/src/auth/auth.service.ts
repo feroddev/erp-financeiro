@@ -1,0 +1,66 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
+import { RegisterDto } from './dto/register.dto';
+import { User } from '../users/entities/user.entity';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
+
+  async validateUser(emailOrUsername: string, password: string): Promise<any> {
+    let user = await this.usersService.findByEmail(emailOrUsername);
+    
+    if (!user) {
+      user = await this.usersService.findByUsername(emailOrUsername);
+    }
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('User is inactive');
+    }
+
+    const { password: _, ...result } = user;
+    return result;
+  }
+
+  async login(user: any) {
+    const payload = { 
+      email: user.email, 
+      sub: user.id,
+      username: user.username 
+    };
+    
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      },
+    };
+  }
+
+  async register(registerDto: RegisterDto): Promise<User> {
+    return this.usersService.create(registerDto);
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.usersService.findById(userId);
+    const { password: _, ...result } = user;
+    return result;
+  }
+}
