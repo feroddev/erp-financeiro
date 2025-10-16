@@ -19,6 +19,9 @@ Sistema de gestão financeira fullstack containerizado com Docker.
 - **TypeScript** - Linguagem tipada
 - **Passport JWT** - Estratégia de autenticação
 - **bcrypt** - Hash de senhas
+- **Swagger** - Documentação automática da API
+- **Migrations** - Controle de versão do banco de dados
+- **Seeds** - Dados iniciais para desenvolvimento
 
 ### Infraestrutura
 - **Docker** - Containerização
@@ -42,7 +45,7 @@ cd mini-ERP-financeiro
 ### 2. Inicie os containers
 
 ```bash
-docker-compose up --build
+docker compose up -d --build
 ```
 
 Este comando irá:
@@ -50,20 +53,28 @@ Este comando irá:
 - Baixar a imagem do PostgreSQL
 - Criar a rede Docker compartilhada
 - Iniciar todos os serviços
+- **Executar migrations automaticamente**
+- **Executar seeds automaticamente** (cria usuário admin e dados de exemplo)
 
 ### 3. Acesse a aplicação
 
 - **Frontend**: http://localhost:4200
 - **Backend API**: http://localhost:3000
+- **Swagger Docs**: http://localhost:3000/api/docs
 - **PostgreSQL**: localhost:5432
 
-### 4. Primeiro acesso
+### 4. Credenciais de Acesso
 
-1. Acesse http://localhost:4200
-2. Clique em "Cadastre-se"
-3. Crie sua conta com email, usuário e senha
-4. Faça login com suas credenciais
-5. Você será redirecionado para o dashboard protegido
+**Usuário Admin** (criado automaticamente pelos seeds):
+- Email: `admin@example.com`
+- Senha: `admin123`
+
+**Banco de Dados**:
+- Host: `localhost`
+- Port: `5432`
+- Database: `mini_erp`
+- Username: `postgres`
+- Password: `postgres`
 
 ## 🏗️ Estrutura do Projeto
 
