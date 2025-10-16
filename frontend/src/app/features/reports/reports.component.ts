@@ -169,9 +169,11 @@ export class ReportsComponent implements OnInit {
       .getTransactions(undefined, undefined, 1, 10000, undefined, this.filters.from, this.filters.to)
       .subscribe({
         next: (response) => {
+          console.log('Transações recebidas:', response.data.length);
           this.calculateReport(response.data);
           this.reportGenerated = true;
           this.loading = false;
+          console.log('Relatório gerado, gráficos atualizados');
         },
         error: (err) => {
           this.error = 'Erro ao gerar relatório';
@@ -243,6 +245,15 @@ export class ReportsComponent implements OnInit {
   }
 
   private updateCharts(): void {
+    console.log('Atualizando gráficos com dados:', {
+      paidReceivable: this.reportData.paidReceivable,
+      paidPayable: this.reportData.paidPayable,
+      pendingReceivable: this.reportData.pendingReceivable,
+      pendingPayable: this.reportData.pendingPayable,
+      overdueReceivable: this.reportData.overdueReceivable,
+      overduePayable: this.reportData.overduePayable
+    });
+
     this.barChartData = {
       labels: ['A Receber', 'A Pagar'],
       datasets: [
@@ -272,6 +283,8 @@ export class ReportsComponent implements OnInit {
     const totalOverdue = this.reportData.overdueReceivable + this.reportData.overduePayable;
     const totalCancelled = this.reportData.cancelledReceivable + this.reportData.cancelledPayable;
 
+    console.log('Dados do gráfico de pizza:', { totalPaid, totalPending, totalOverdue, totalCancelled });
+
     this.statusPieData = {
       labels: ['Pago', 'Pendente', 'Vencido', 'Cancelado'],
       datasets: [{
@@ -280,6 +293,8 @@ export class ReportsComponent implements OnInit {
         hoverBackgroundColor: ['#059669', '#d97706', '#dc2626', '#4b5563']
       }]
     };
+
+    console.log('Gráficos atualizados:', { barChartData: this.barChartData, statusPieData: this.statusPieData });
   }
 
   formatCurrency(value: number): string {
