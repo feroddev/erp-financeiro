@@ -7,6 +7,8 @@ import { HeaderComponent } from '../../shared/components/header/header.component
 import { CardComponent } from '../../shared/components/card/card.component';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 
 interface ReportData {
   totalReceivable: number;
@@ -32,7 +34,8 @@ interface ReportData {
     HeaderComponent,
     CardComponent,
     ButtonComponent,
-    AlertComponent
+    AlertComponent,
+    BaseChartDirective
   ],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
@@ -60,6 +63,78 @@ export class ReportsComponent implements OnInit {
     cancelledReceivable: 0,
     cancelledPayable: 0,
     transactions: []
+  };
+
+  public barChartType: ChartType = 'bar';
+  public pieChartType: ChartType = 'pie';
+  public doughnutChartType: ChartType = 'doughnut';
+
+  public barChartData: ChartData<'bar'> = {
+    labels: ['A Receber', 'A Pagar'],
+    datasets: [
+      { data: [0, 0], label: 'Pago', backgroundColor: '#10b981', hoverBackgroundColor: '#059669' },
+      { data: [0, 0], label: 'Pendente', backgroundColor: '#f59e0b', hoverBackgroundColor: '#d97706' },
+      { data: [0, 0], label: 'Vencido', backgroundColor: '#ef4444', hoverBackgroundColor: '#dc2626' }
+    ]
+  };
+
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top'
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.dataset.label || '';
+            const value = context.parsed.y || 0;
+            return `${label}: ${this.formatCurrency(value)}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => {
+            return 'R$ ' + Number(value).toLocaleString('pt-BR');
+          }
+        }
+      }
+    }
+  };
+
+  public statusPieData: ChartData<'pie'> = {
+    labels: ['Pago', 'Pendente', 'Vencido', 'Cancelado'],
+    datasets: [{
+      data: [0, 0, 0, 0],
+      backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#6b7280'],
+      hoverBackgroundColor: ['#059669', '#d97706', '#dc2626', '#4b5563']
+    }]
+  };
+
+  public pieChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right'
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            return `${label}: ${this.formatCurrency(value)}`;
+          }
+        }
+      }
+    }
   };
 
   constructor(
@@ -163,6 +238,48 @@ export class ReportsComponent implements OnInit {
     });
 
     this.reportData.balance = this.reportData.totalReceivable - this.reportData.totalPayable;
+
+    this.updateCharts();
+  }
+
+  private updateCharts(): void {
+    this.barChartData = {
+      labels: ['A Receber', 'A Pagar'],
+      datasets: [
+        {
+          data: [this.reportData.paidReceivable, this.reportData.paidPayable],
+          label: 'Pago',
+          backgroundColor: '#10b981',
+          hoverBackgroundColor: '#059669'
+        },
+        {
+          data: [this.reportData.pendingReceivable, this.reportData.pendingPayable],
+          label: 'Pendente',
+          backgroundColor: '#f59e0b',
+          hoverBackgroundColor: '#d97706'
+        },
+        {
+          data: [this.reportData.overdueReceivable, this.reportData.overduePayable],
+          label: 'Vencido',
+          backgroundColor: '#ef4444',
+          hoverBackgroundColor: '#dc2626'
+        }
+      ]
+    };
+
+    const totalPaid = this.reportData.paidReceivable + this.reportData.paidPayable;
+    const totalPending = this.reportData.pendingReceivable + this.reportData.pendingPayable;
+    const totalOverdue = this.reportData.overdueReceivable + this.reportData.overduePayable;
+    const totalCancelled = this.reportData.cancelledReceivable + this.reportData.cancelledPayable;
+
+    this.statusPieData = {
+      labels: ['Pago', 'Pendente', 'Vencido', 'Cancelado'],
+      datasets: [{
+        data: [totalPaid, totalPending, totalOverdue, totalCancelled],
+        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#6b7280'],
+        hoverBackgroundColor: ['#059669', '#d97706', '#dc2626', '#4b5563']
+      }]
+    };
   }
 
   formatCurrency(value: number): string {

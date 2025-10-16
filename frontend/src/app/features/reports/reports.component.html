@@ -71,6 +71,32 @@
     </div>
 
     <div *ngIf="reportGenerated && !loading">
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <app-card [padding]="true">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Comparativo por Status</h3>
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="barChartData"
+              [options]="barChartOptions"
+              [type]="barChartType">
+            </canvas>
+          </div>
+        </app-card>
+
+        <app-card [padding]="true">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Distribuição por Status</h3>
+          <div class="h-80">
+            <canvas
+              baseChart
+              [data]="statusPieData"
+              [options]="pieChartOptions"
+              [type]="pieChartType">
+            </canvas>
+          </div>
+        </app-card>
+      </div>
+
       <div class="grid md:grid-cols-3 gap-6 mb-8">
         <app-card [padding]="true" class="border-l-4 border-green-500">
           <div class="flex items-center justify-between mb-4">
