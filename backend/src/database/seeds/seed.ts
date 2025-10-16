@@ -8,6 +8,7 @@ import {
   TransactionKind,
   TransactionStatus,
 } from '../../transactions/entities/transaction.entity';
+import { Role } from '../../auth/enums/role.enum';
 
 config();
 
@@ -57,6 +58,7 @@ async function seed() {
       username: 'admin',
       email: 'admin@example.com',
       password: hashedPassword,
+      role: Role.ADMIN,
       isActive: true,
     });
     await userRepository.save(user);

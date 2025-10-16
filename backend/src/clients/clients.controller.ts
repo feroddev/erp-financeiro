@@ -17,15 +17,19 @@ import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../auth/enums/role.enum';
 
 @ApiTags('clients')
 @ApiBearerAuth('JWT-auth')
 @Controller('clients')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Criar novo cliente' })
   @ApiResponse({ status: 201, description: 'Cliente criado com sucesso' })
@@ -73,6 +77,7 @@ export class ClientsController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remover cliente' })
   @ApiResponse({ status: 204, description: 'Cliente removido com sucesso' })
