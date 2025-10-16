@@ -10,6 +10,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ClientsService } from './clients.service';
@@ -56,7 +57,8 @@ export class ClientsController {
   @ApiOperation({ summary: 'Buscar cliente por ID' })
   @ApiResponse({ status: 200, description: 'Cliente encontrado' })
   @ApiResponse({ status: 404, description: 'Cliente não encontrado' })
-  findOne(@Param('id') id: string) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.clientsService.findOne(id);
   }
 
@@ -65,7 +67,8 @@ export class ClientsController {
   @ApiResponse({ status: 200, description: 'Cliente atualizado com sucesso' })
   @ApiResponse({ status: 404, description: 'Cliente não encontrado' })
   @ApiResponse({ status: 409, description: 'Email já existe' })
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateClientDto: UpdateClientDto) {
     return this.clientsService.update(id, updateClientDto);
   }
 
@@ -74,7 +77,8 @@ export class ClientsController {
   @ApiOperation({ summary: 'Remover cliente' })
   @ApiResponse({ status: 204, description: 'Cliente removido com sucesso' })
   @ApiResponse({ status: 404, description: 'Cliente não encontrado' })
-  remove(@Param('id') id: string) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.clientsService.remove(id);
   }
 }

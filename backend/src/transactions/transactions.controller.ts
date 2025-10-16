@@ -10,6 +10,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
@@ -66,7 +67,8 @@ export class TransactionsController {
   @ApiOperation({ summary: 'Buscar transação por ID' })
   @ApiResponse({ status: 200, description: 'Transação encontrada' })
   @ApiResponse({ status: 404, description: 'Transação não encontrada' })
-  findOne(@Param('id') id: string) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.transactionsService.findOne(id);
   }
 
@@ -74,7 +76,11 @@ export class TransactionsController {
   @ApiOperation({ summary: 'Atualizar transação' })
   @ApiResponse({ status: 200, description: 'Transação atualizada com sucesso' })
   @ApiResponse({ status: 404, description: 'Transação não encontrada' })
-  update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateTransactionDto: UpdateTransactionDto,
+  ) {
     return this.transactionsService.update(id, updateTransactionDto);
   }
 
@@ -83,7 +89,8 @@ export class TransactionsController {
   @ApiOperation({ summary: 'Marcar transação como paga' })
   @ApiResponse({ status: 200, description: 'Transação marcada como paga' })
   @ApiResponse({ status: 404, description: 'Transação não encontrada' })
-  pay(@Param('id') id: string, @Body('paymentDate') paymentDate?: string) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  pay(@Param('id', ParseUUIDPipe) id: string, @Body('paymentDate') paymentDate?: string) {
     return this.transactionsService.pay(id, paymentDate);
   }
 
@@ -92,7 +99,8 @@ export class TransactionsController {
   @ApiOperation({ summary: 'Remover transação' })
   @ApiResponse({ status: 204, description: 'Transação removida com sucesso' })
   @ApiResponse({ status: 404, description: 'Transação não encontrada' })
-  remove(@Param('id') id: string) {
+  @ApiResponse({ status: 400, description: 'ID inválido' })
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.transactionsService.remove(id);
   }
 }
