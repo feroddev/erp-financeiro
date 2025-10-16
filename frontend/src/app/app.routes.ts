@@ -5,6 +5,7 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { ClientsComponent } from './features/clients/clients.component';
 import { ReceivablesComponent } from './features/receivables/receivables.component';
 import { PayablesComponent } from './features/payables/payables.component';
+import { ReportsComponent } from './features/reports/reports.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -29,6 +30,11 @@ export const routes: Routes = [
   { 
     path: 'payables', 
     component: PayablesComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'reports', 
+    component: ReportsComponent,
     canActivate: [authGuard]
   },
   { path: '**', redirectTo: '/login' }
