@@ -1,0 +1,390 @@
+<div class="min-h-screen bg-gray-50">
+  <nav class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <button
+            (click)="goBack()"
+            class="mr-2 sm:mr-4 text-gray-600 hover:text-gray-900 transition-colors p-2"
+          >
+            <svg
+              class="w-5 h-5 sm:w-6 sm:h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h1 class="text-lg sm:text-xl font-bold text-gray-800">
+            Contas a Receber
+          </h1>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <app-alert
+      *ngIf="error"
+      [message]="error"
+      type="error"
+      [dismissible]="true"
+      (dismiss)="error = ''"
+    ></app-alert>
+
+    <app-card [padding]="true">
+      <div class="flex flex-col gap-4 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <app-button
+            (clicked)="openCreateModal()"
+            variant="primary"
+            icon="plus"
+          >
+            <span class="hidden sm:inline">Nova Conta a Receber</span>
+            <span class="sm:hidden">Nova</span>
+          </app-button>
+        </div>
+      </div>
+
+      <div *ngIf="loading" class="space-y-4">
+        <div
+          *ngFor="let i of [1, 2, 3, 4, 5]"
+          class="animate-pulse flex items-center p-4 border border-gray-200 rounded-lg"
+        >
+          <div class="flex-1 space-y-2">
+            <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && transactions.length === 0" class="text-center py-12">
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">
+          Nenhuma conta a receber encontrada
+        </h3>
+        <p class="mt-1 text-sm text-gray-500">
+          Comece criando uma nova conta a receber.
+        </p>
+      </div>
+
+      <app-table
+        *ngIf="!loading && transactions.length > 0"
+        [columns]="tableColumns"
+        [showActions]="true"
+        [showPagination]="true"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [total]="total"
+        itemName="contas a receber"
+        (previousPage)="previousPage()"
+        (nextPage)="nextPage()"
+      >
+        <tr
+          *ngFor="let transaction of transactions"
+          class="hover:bg-gray-50 transition-colors"
+        >
+          <td class="px-3 py-4">
+            <div class="text-sm font-medium text-gray-900">
+              {{ transaction.description }}
+            </div>
+          </td>
+          <td class="px-3 py-4 hidden sm:table-cell">
+            <div class="text-sm text-gray-900">
+              {{ transaction.client?.name || '-' }}
+            </div>
+          </td>
+          <td class="px-3 py-4 hidden md:table-cell">
+            <div class="text-sm font-semibold text-green-600">
+              {{ formatCurrency(transaction.amount) }}
+            </div>
+          </td>
+          <td class="px-3 py-4 hidden lg:table-cell">
+            <div class="text-sm text-gray-900">
+              {{ formatDate(transaction.dueDate) }}
+            </div>
+          </td>
+          <td class="px-3 py-4">
+            <span
+              class="px-2 py-1 text-xs font-semibold rounded-full"
+              [ngClass]="getStatusClass(transaction.status)"
+            >
+              {{ getStatusLabel(transaction.status) }}
+            </span>
+          </td>
+          <td
+            class="relative py-4 pl-3 pr-4 sm:pr-6 text-right text-sm font-medium whitespace-nowrap"
+          >
+            <div class="flex items-center justify-end gap-2">
+              <button
+                *ngIf="transaction.status === TransactionStatus.PENDING || transaction.status === TransactionStatus.OVERDUE"
+                (click)="markAsPaid(transaction)"
+                class="text-green-600 hover:text-green-900 transition-colors p-1"
+                title="Marcar como Pago"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+              <button
+                (click)="openEditModal(transaction)"
+                class="text-indigo-600 hover:text-indigo-900 transition-colors p-1"
+                title="Editar"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+              <button
+                (click)="openDeleteModal(transaction)"
+                class="text-red-600 hover:text-red-900 transition-colors p-1"
+                title="Excluir"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </app-table>
+    </app-card>
+  </main>
+</div>
+
+<app-modal
+  [isOpen]="showModal"
+  [title]="modalMode === 'create' ? 'Nova Conta a Receber' : 'Editar Conta a Receber'"
+  (close)="closeModal()"
+  size="md"
+>
+  <app-alert *ngIf="error" [message]="error" type="error"></app-alert>
+
+  <div class="space-y-4">
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        Descrição <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        [(ngModel)]="transactionForm.description"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        placeholder="Ex: Pagamento de serviços"
+        required
+      />
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+          Valor <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          [(ngModel)]="transactionForm.amount"
+          step="0.01"
+          min="0"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          placeholder="0.00"
+          required
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+          Status <span class="text-red-500">*</span>
+        </label>
+        <select
+          [(ngModel)]="transactionForm.status"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          required
+        >
+          <option [value]="TransactionStatus.PENDING">Pendente</option>
+          <option [value]="TransactionStatus.PAID">Pago</option>
+          <option [value]="TransactionStatus.OVERDUE">Vencido</option>
+          <option [value]="TransactionStatus.CANCELLED">Cancelado</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+          Data de Vencimento <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="date"
+          [(ngModel)]="transactionForm.dueDate"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          required
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+          Data de Pagamento
+        </label>
+        <input
+          type="date"
+          [(ngModel)]="transactionForm.paymentDate"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        Cliente
+      </label>
+      <select
+        [(ngModel)]="transactionForm.clientId"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      >
+        <option value="">Selecione um cliente (opcional)</option>
+        <option *ngFor="let client of clients" [value]="client.id">
+          {{ client.name }}
+        </option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        Observações
+      </label>
+      <textarea
+        [(ngModel)]="transactionForm.notes"
+        rows="3"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        placeholder="Observações adicionais..."
+      ></textarea>
+    </div>
+  </div>
+
+  <div footer class="w-full flex flex-col-reverse sm:flex-row gap-3">
+    <app-button
+      (clicked)="closeModal()"
+      variant="secondary"
+      [fullWidth]="true"
+      class="sm:w-auto"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      (clicked)="saveTransaction()"
+      variant="primary"
+      [disabled]="!transactionForm.description || !transactionForm.amount || !transactionForm.dueDate"
+      [fullWidth]="true"
+      class="sm:w-auto"
+    >
+      {{ modalMode === 'create' ? 'Criar Conta' : 'Salvar Alterações' }}
+    </app-button>
+  </div>
+</app-modal>
+
+<app-modal
+  [isOpen]="showDeleteModal"
+  title="Confirmar Exclusão"
+  (close)="closeDeleteModal()"
+  size="sm"
+>
+  <div class="space-y-4">
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <svg
+          class="h-6 w-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-gray-900">
+          Tem certeza que deseja excluir esta conta a receber?
+        </h3>
+        <div class="mt-2 text-sm text-gray-500">
+          <p>
+            A conta <strong>{{ transactionToDelete?.description }}</strong> será
+            permanentemente excluída. Esta ação não pode ser desfeita.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    footer
+    class="w-full flex flex-col-reverse sm:flex-row gap-3 justify-between align-center"
+  >
+    <app-button
+      (clicked)="closeDeleteModal()"
+      variant="secondary"
+      [fullWidth]="true"
+      class="sm:w-auto"
+    >
+      Cancelar
+    </app-button>
+    <app-button
+      (clicked)="confirmDelete()"
+      variant="danger"
+      [fullWidth]="true"
+      class="sm:w-auto"
+    >
+      Excluir Conta
+    </app-button>
+  </div>
+</app-modal>

@@ -3,6 +3,8 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { ClientsComponent } from './features/clients/clients.component';
+import { ReceivablesComponent } from './features/receivables/receivables.component';
+import { PayablesComponent } from './features/payables/payables.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -17,6 +19,16 @@ export const routes: Routes = [
   { 
     path: 'clients', 
     component: ClientsComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'receivables', 
+    component: ReceivablesComponent,
+    canActivate: [authGuard]
+  },
+  { 
+    path: 'payables', 
+    component: PayablesComponent,
     canActivate: [authGuard]
   },
   { path: '**', redirectTo: '/login' }

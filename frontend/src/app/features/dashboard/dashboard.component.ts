@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
   financialSummary: FinancialSummary | null = null;
   loading = true;
   error = '';
+  mobileMenuOpen = false;
 
   constructor(
     private authService: AuthService,
@@ -59,5 +60,13 @@ export class DashboardComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
   }
 }
