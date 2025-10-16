@@ -25,17 +25,19 @@ export class ClientsService {
     return await this.clientRepository.save(client);
   }
 
-  async findAll(
-    search?: string,
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<{ data: Client[]; total: number; page: number; totalPages: number }> {
+  async findAll(filters: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ data: Client[]; total: number; page: number; totalPages: number }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
 
     const where: any = { isActive: true };
 
-    if (search) {
-      where.name = Like(`%${search}%`);
+    if (filters.search) {
+      where.name = Like(`%${filters.search}%`);
     }
 
     const [data, total] = await this.clientRepository.findAndCount({

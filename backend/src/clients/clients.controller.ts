@@ -33,9 +33,11 @@ export class ClientsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const pageNumber = page ? parseInt(page, 10) : 1;
-    const limitNumber = limit ? parseInt(limit, 10) : 10;
-    return this.clientsService.findAll(search, pageNumber, limitNumber);
+    return this.clientsService.findAll({
+      search,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
   }
 
   @Get(':id')

@@ -14,8 +14,8 @@ import {
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { FilterTransactionDto } from './dto/filter-transaction.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { TransactionStatus, TransactionKind } from './entities/transaction.entity';
 
 @Controller('transactions')
 @UseGuards(JwtAuthGuard)
@@ -29,26 +29,12 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll(
-    @Query('kind') kind?: TransactionKind,
-    @Query('status') status?: TransactionStatus,
-    @Query('clientId') clientId?: string,
-    @Query('from') from?: string,
-    @Query('to') to?: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
-    const pageNumber = page ? parseInt(page, 10) : 1;
-    const limitNumber = limit ? parseInt(limit, 10) : 10;
-    return this.transactionsService.findAll(
-      kind,
-      status,
-      clientId,
-      from,
-      to,
-      pageNumber,
-      limitNumber,
-    );
+  findAll(@Query() filters: FilterTransactionDto) {
+    return this.transactionsService.findAll({
+      ...filters,
+      page: filters.page ? parseInt(filters.page, 10) : undefined,
+      limit: filters.limit ? parseInt(filters.limit, 10) : undefined,
+    });
   }
 
   @Get(':id')

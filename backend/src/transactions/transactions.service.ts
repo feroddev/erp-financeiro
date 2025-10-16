@@ -17,36 +17,38 @@ export class TransactionsService {
     return await this.transactionRepository.save(transaction);
   }
 
-  async findAll(
-    kind?: TransactionKind,
-    status?: TransactionStatus,
-    clientId?: string,
-    from?: string,
-    to?: string,
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<{ data: Transaction[]; total: number; page: number; totalPages: number }> {
+  async findAll(filters: {
+    kind?: TransactionKind;
+    status?: TransactionStatus;
+    clientId?: string;
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ data: Transaction[]; total: number; page: number; totalPages: number }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
     const where: any = {};
 
-    if (kind) {
-      where.kind = kind;
+    if (filters.kind) {
+      where.kind = filters.kind;
     }
 
-    if (status) {
-      where.status = status;
+    if (filters.status) {
+      where.status = filters.status;
     }
 
-    if (clientId) {
-      where.clientId = clientId;
+    if (filters.clientId) {
+      where.clientId = filters.clientId;
     }
 
-    if (from && to) {
-      where.dueDate = Between(new Date(from), new Date(to));
-    } else if (from) {
-      where.dueDate = Between(new Date(from), new Date('2100-12-31'));
-    } else if (to) {
-      where.dueDate = LessThanOrEqual(new Date(to));
+    if (filters.from && filters.to) {
+      where.dueDate = Between(new Date(filters.from), new Date(filters.to));
+    } else if (filters.from) {
+      where.dueDate = Between(new Date(filters.from), new Date('2100-12-31'));
+    } else if (filters.to) {
+      where.dueDate = LessThanOrEqual(new Date(filters.to));
     }
 
     const [data, total] = await this.transactionRepository.findAndCount({
