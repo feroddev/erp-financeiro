@@ -47,6 +47,13 @@ export class ClientsComponent implements OnInit {
   showDeleteModal = false;
   clientToDelete: Client | null = null;
 
+  formErrors = {
+    name: "",
+    email: "",
+    phone: "",
+    document: ""
+  };
+
   clientForm: CreateClientDto = {
     name: "",
     email: "",
@@ -127,11 +134,33 @@ export class ClientsComponent implements OnInit {
   openEditModal(client: Client): void {
     this.modalMode = "edit";
     this.selectedClient = client;
+    
+    const phoneNumbers = client.phone?.replace(/\D/g, "") || "";
+    const docNumbers = client.document?.replace(/\D/g, "") || "";
+    
+    let formattedPhone = "";
+    if (phoneNumbers.length > 0) {
+      if (phoneNumbers.length <= 10) {
+        formattedPhone = phoneNumbers.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+      } else {
+        formattedPhone = phoneNumbers.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+      }
+    }
+    
+    let formattedDoc = "";
+    if (docNumbers.length > 0) {
+      if (docNumbers.length <= 11) {
+        formattedDoc = docNumbers.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4");
+      } else {
+        formattedDoc = docNumbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, "$1.$2.$3/$4-$5");
+      }
+    }
+    
     this.clientForm = {
       name: client.name,
       email: client.email,
-      phone: client.phone || "",
-      document: client.document || "",
+      phone: formattedPhone,
+      document: formattedDoc,
       address: client.address || "",
     };
     this.showModal = true;
@@ -141,13 +170,25 @@ export class ClientsComponent implements OnInit {
     this.showModal = false;
     this.selectedClient = null;
     this.error = "";
+    this.formErrors = {
+      name: "",
+      email: "",
+      phone: "",
+      document: ""
+    };
   }
 
   saveClient(): void {
     this.error = "";
 
+    const clientData = {
+      ...this.clientForm,
+      phone: this.clientForm.phone?.replace(/\D/g, "") || "",
+      document: this.clientForm.document?.replace(/\D/g, "") || ""
+    };
+
     if (this.modalMode === "create") {
-      this.clientsService.createClient(this.clientForm).subscribe({
+      this.clientsService.createClient(clientData).subscribe({
         next: () => {
           this.closeModal();
           this.loadClients();
@@ -161,7 +202,7 @@ export class ClientsComponent implements OnInit {
     } else {
       if (this.selectedClient) {
         this.clientsService
-          .updateClient(this.selectedClient.id, this.clientForm)
+          .updateClient(this.selectedClient.id, clientData)
           .subscribe({
             next: () => {
               this.closeModal();
@@ -205,5 +246,126 @@ export class ClientsComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(["/dashboard"]);
+  }
+
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, "");
+    
+    if (value.length > 11) {
+      value = value.substring(0, 11);
+    }
+    
+    if (value.length <= 10) {
+      value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+    } else {
+      value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+    }
+    
+    this.clientForm.phone = value;
+    this.validatePhone();
+  }
+
+  onDocumentInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, "");
+    
+    if (value.length > 14) {
+      value = value.substring(0, 14);
+    }
+    
+    if (value.length <= 11) {
+      value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, "$1.$2.$3-$4");
+    } else {
+      value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2})/, "$1.$2.$3/$4-$5");
+    }
+    
+    this.clientForm.document = value;
+    this.validateDocument();
+  }
+
+  validateEmail(): void {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (this.clientForm.email && !emailRegex.test(this.clientForm.email)) {
+      this.formErrors.email = "Email inválido";
+    } else {
+      this.formErrors.email = "";
+    }
+  }
+
+  validatePhone(): void {
+    const phoneNumbers = this.clientForm.phone?.replace(/\D/g, "") || "";
+    if (this.clientForm.phone && phoneNumbers.length > 0 && phoneNumbers.length < 10) {
+      this.formErrors.phone = "Telefone deve ter 10 ou 11 dígitos";
+    } else {
+      this.formErrors.phone = "";
+    }
+  }
+
+  validateDocument(): void {
+    const docNumbers = this.clientForm.document?.replace(/\D/g, "") || "";
+    if (this.clientForm.document && docNumbers.length > 0) {
+      if (docNumbers.length !== 11 && docNumbers.length !== 14) {
+        this.formErrors.document = "CPF deve ter 11 dígitos ou CNPJ 14 dígitos";
+      } else {
+        this.formErrors.document = "";
+      }
+    } else {
+      this.formErrors.document = "";
+    }
+  }
+
+  isFormValid(): boolean {
+    return (
+      !!this.clientForm.name &&
+      !!this.clientForm.email &&
+      !this.formErrors.email &&
+      !this.formErrors.phone &&
+      !this.formErrors.document
+    );
+  }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.key;
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+    
+    if (allowedKeys.includes(charCode)) {
+      return true;
+    }
+    
+    if (event.ctrlKey || event.metaKey) {
+      return true;
+    }
+    
+    if (!/^[0-9]$/.test(charCode)) {
+      event.preventDefault();
+      return false;
+    }
+    
+    return true;
+  }
+
+  formatPhone(phone: string | undefined): string {
+    if (!phone) return "-";
+    const numbers = phone.replace(/\D/g, "");
+    
+    if (numbers.length <= 10) {
+      return numbers.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+    } else {
+      return numbers.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+    }
+  }
+
+  formatDocument(document: string | undefined): string {
+    if (!document) return "-";
+    const numbers = document.replace(/\D/g, "");
+    
+    if (numbers.length === 11) {
+      return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    } else if (numbers.length === 14) {
+      return numbers.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+    }
+    
+    return document;
   }
 }

@@ -55,22 +55,22 @@ async function seed() {
       {
         name: 'João Silva',
         email: 'joao.silva@example.com',
-        phone: '(11) 98765-4321',
-        document: '123.456.789-00',
+        phone: '11987654321',
+        document: '12345678900',
         address: 'Rua das Flores, 123 - São Paulo, SP',
       },
       {
         name: 'Maria Santos',
         email: 'maria.santos@example.com',
-        phone: '(21) 91234-5678',
-        document: '987.654.321-00',
+        phone: '21912345678',
+        document: '98765432100',
         address: 'Av. Principal, 456 - Rio de Janeiro, RJ',
       },
       {
         name: 'Empresa XYZ Ltda',
         email: 'contato@empresaxyz.com',
-        phone: '(11) 3456-7890',
-        document: '12.345.678/0001-90',
+        phone: '1134567890',
+        document: '12345678000190',
         address: 'Av. Paulista, 1000 - São Paulo, SP',
       },
     ];

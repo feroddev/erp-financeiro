@@ -21,18 +21,20 @@ export class CreateClientDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^[\d\s\-\+\(\)]+$/, {
-    message: 'phone must be a valid phone number',
+  @Matches(/^\d+$/, {
+    message: 'phone must contain only numbers',
   })
+  @MinLength(10)
+  @MaxLength(11)
   phone?: string;
 
   @IsOptional()
   @IsString()
-  @Matches(/^[\d.\-\/]+$/, {
-    message: 'document must contain only numbers, dots, dashes and slashes',
+  @Matches(/^\d+$/, {
+    message: 'document must contain only numbers',
   })
   @MinLength(11)
-  @MaxLength(18)
+  @MaxLength(14)
   document?: string;
 
   @IsOptional()
