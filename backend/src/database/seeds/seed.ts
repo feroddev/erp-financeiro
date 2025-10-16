@@ -31,14 +31,25 @@ async function seed() {
     const clientRepository = dataSource.getRepository(Client);
     const transactionRepository = dataSource.getRepository(Transaction);
 
+    const forceReset = process.argv.includes('--reset');
+
     const existingUser = await userRepository.findOne({
       where: { email: 'admin@example.com' },
     });
 
-    if (existingUser) {
+    if (existingUser && !forceReset) {
       console.log('Seeds já foram executados anteriormente');
+      console.log('Use "npm run seed:run -- --reset" para limpar e recriar os dados');
       await dataSource.destroy();
       return;
+    }
+
+    if (forceReset) {
+      console.log('🗑️  Limpando dados existentes...');
+      await dataSource.query('TRUNCATE TABLE "transactions" CASCADE');
+      await dataSource.query('TRUNCATE TABLE "clients" CASCADE');
+      await dataSource.query('TRUNCATE TABLE "users" CASCADE');
+      console.log('✓ Dados limpos');
     }
 
     const hashedPassword = await bcrypt.hash('admin123', 10);
