@@ -179,6 +179,10 @@ export class PayablesComponent implements OnInit {
     this.loadTransactions();
   }
 
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
   openCreateModal(): void {
     this.modalMode = 'create';
     this.selectedTransaction = null;
