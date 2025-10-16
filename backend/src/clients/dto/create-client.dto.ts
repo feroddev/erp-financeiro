@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateCustomerDto {
+export class CreateClientDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(3)

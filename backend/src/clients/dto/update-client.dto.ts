@@ -1,6 +1,6 @@
 import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
-export class UpdateCustomerDto {
+export class UpdateClientDto {
   @IsOptional()
   @IsString()
   @MinLength(3)

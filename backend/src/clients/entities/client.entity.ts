@@ -4,10 +4,11 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
-@Entity('customers')
-export class Customer {
+@Entity('clients')
+export class Client {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -34,4 +35,7 @@ export class Customer {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
