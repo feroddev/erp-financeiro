@@ -44,6 +44,9 @@ export class ClientsComponent implements OnInit {
   modalMode: "create" | "edit" = "create";
   selectedClient: Client | null = null;
 
+  showDeleteModal = false;
+  clientToDelete: Client | null = null;
+
   clientForm: CreateClientDto = {
     name: "",
     email: "",
@@ -53,10 +56,10 @@ export class ClientsComponent implements OnInit {
   };
 
   tableColumns: TableColumn[] = [
-    { key: "name", label: "Nome" },
-    { key: "email", label: "Email" },
-    { key: "phone", label: "Telefone" },
-    { key: "document", label: "Documento" },
+    { key: "name", label: "Nome", class: "" },
+    { key: "email", label: "Email", class: "hidden sm:table-cell" },
+    { key: "phone", label: "Telefone", class: "hidden md:table-cell" },
+    { key: "document", label: "Documento", class: "hidden lg:table-cell" },
   ];
 
   constructor(
@@ -174,17 +177,27 @@ export class ClientsComponent implements OnInit {
     }
   }
 
-  deleteClient(client: Client): void {
-    if (
-      confirm(`Tem certeza que deseja excluir o cliente "${client.name}"?`)
-    ) {
-      this.clientsService.deleteClient(client.id).subscribe({
+  openDeleteModal(client: Client): void {
+    this.clientToDelete = client;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.clientToDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (this.clientToDelete) {
+      this.clientsService.deleteClient(this.clientToDelete.id).subscribe({
         next: () => {
+          this.closeDeleteModal();
           this.loadClients();
         },
         error: (err) => {
           this.error = "Erro ao excluir cliente";
           console.error("Erro:", err);
+          this.closeDeleteModal();
         },
       });
     }
