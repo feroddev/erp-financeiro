@@ -17,11 +17,12 @@ Aplicação completa para gerenciamento financeiro com controle de clientes, con
 - **Swagger** - Documentação automática da API
 
 ### Frontend
-- **Angular 18** - Framework web moderno
+- **Angular 18** - Framework web moderno com standalone components
 - **TypeScript** - Linguagem tipada
-- **Tailwind CSS** - Framework CSS utility-first
+- **Tailwind CSS** - Framework CSS utility-first para estilização
 - **RxJS** - Programação reativa
 - **Angular Router** - Gerenciamento de rotas
+- **Layout Responsivo** - Sidebar/topbar adaptável a diferentes telas
 
 ### DevOps
 - **Docker** - Containerização da aplicação
@@ -82,7 +83,7 @@ backend/src/
 - **Exception Handling**: Tratamento centralizado de erros
 - **Soft Delete**: Deleção lógica para preservação de histórico
 
-### Frontend (Angular)
+### Frontend (Angular 18+)
 
 ```
 frontend/src/app/
@@ -92,15 +93,18 @@ frontend/src/app/
 │   ├── models/              # Interfaces TypeScript
 │   └── services/            # Serviços globais
 └── features/                # Módulos de funcionalidades
-    ├── auth/                # Login e registro
-    └── dashboard/           # Dashboard principal
+    ├── auth/                # Login e registro (standalone components)
+    └── dashboard/           # Dashboard principal (standalone components)
 ```
 
-**Padrões implementados:**
+**Características do Frontend:**
+- **Standalone Components**: Utilização da nova arquitetura do Angular 18+ sem NgModules
+- **Tailwind CSS**: Estilização utility-first para desenvolvimento rápido e consistente
+- **Layout Responsivo**: Interface adaptável com sidebar/topbar para desktop e mobile
 - **Smart/Dumb Components**: Separação entre componentes com lógica e apresentação
 - **Reactive Programming**: RxJS para operações assíncronas
 - **Route Guards**: Proteção de rotas autenticadas
-- **HTTP Interceptors**: Adição automática de tokens JWT
+- **HTTP Interceptors**: Adição automática de tokens JWT nas requisições
 
 ## 🔧 Instalação e Execução
 
